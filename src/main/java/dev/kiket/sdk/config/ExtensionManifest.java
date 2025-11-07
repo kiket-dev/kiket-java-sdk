@@ -60,7 +60,11 @@ public class ExtensionManifest {
         Map<String, Object> overrides = new HashMap<>();
         for (String key : getSecretKeys()) {
             String envKey = "KIKET_SECRET_" + key.toUpperCase();
-            String envValue = System.getenv(envKey);
+            // Check system property first (for testing), then environment variable
+            String envValue = System.getProperty(envKey);
+            if (envValue == null) {
+                envValue = System.getenv(envKey);
+            }
             if (envValue != null) {
                 overrides.put(key, envValue);
             }
