@@ -1,0 +1,78 @@
+name: Publish Package
+
+on:
+  push:
+    tags:
+      - 'java-v*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/java-v}" >> $GITHUB_OUTPUT
+
+      - name: Verify pom.xml version matches tag
+        working-directory: sdk/java
+        run: |
+          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          if [ "$POM_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
+            echo "Version mismatch: pom.xml has $POM_VERSION but tag is ${{ steps.version.outputs.VERSION }}"
+            exit 1
+          fi
+
+      - name: Test with Maven
+        working-directory: sdk/java
+        run: mvn clean test
+
+      - name: Build with Maven
+        working-directory: sdk/java
+        run: mvn clean package -DskipTests
+
+      - name: Publish to GitHub Packages
+        working-directory: sdk/java
+        run: mvn deploy -DskipTests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: java-v${{ steps.version.outputs.VERSION }}
+          name: Java SDK v${{ steps.version.outputs.VERSION }}
+          body: |
+            Release of kiket-sdk (Java) version ${{ steps.version.outputs.VERSION }}
+
+            ## Installation
+
+            ### Maven
+            ```xml
+            <dependency>
+              <groupId>dev.kiket</groupId>
+              <artifactId>kiket-sdk</artifactId>
+              <version>${{ steps.version.outputs.VERSION }}</version>
+            </dependency>
+            ```
+
+            ## Changes
+            See [CHANGELOG.md](https://github.com/kiket/kiket-java-sdk/blob/main/CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
