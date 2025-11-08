@@ -12,6 +12,7 @@
 - 📦 **Manifest-aware defaults** – automatically loads `extension.yaml`/`manifest.yaml`, applies configuration defaults, and hydrates secrets from `KIKET_SECRET_*` environment variables.
 - 🧱 **Typed & documented** – designed for Java 17+ with full type safety and rich Javadoc comments.
 - 📊 **Telemetry & feedback hooks** – capture handler duration/success metrics automatically.
+- 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.getEndpoints().customData(projectId)` using the configured extension API key.
 
 ## Quickstart
 
@@ -68,12 +69,36 @@ public class Main {
 }
 ```
 
+### Custom Data Client
+
+When your manifest defines `custom_data.permissions`, configure `extensionApiKey(...)` (or set `KIKET_EXTENSION_API_KEY`) so outbound calls include `X-Kiket-API-Key`:
+
+```java
+sdk.register("issue.created", "v1", (payload, context) -> {
+    String projectId = String.valueOf(((Map<?, ?>) payload.get("issue")).get("project_id"));
+    var customData = context.getEndpoints().customData(projectId);
+
+    var options = new CustomDataClient.CustomDataListOptions();
+    options.setLimit(10);
+    options.setFilters(Map.of("status", "active"));
+    customData.list("com.example.crm.contacts", "automation_records", options);
+
+    customData.create("com.example.crm.contacts", "automation_records", Map.of(
+        "email", "lead@example.com",
+        "metadata", Map.of("source", "webhook")
+    ));
+
+    return Map.of("ok", true);
+});
+```
+
 ## Configuration
 
 ### Environment Variables
 
 - `KIKET_WEBHOOK_SECRET` – Webhook HMAC secret for signature verification
 - `KIKET_WORKSPACE_TOKEN` – Workspace token for API authentication
+- `KIKET_EXTENSION_API_KEY` – Extension API key for `/api/v1/ext/**` endpoints (custom data client)
 - `KIKET_BASE_URL` – Kiket API base URL (defaults to `https://kiket.dev`)
 - `KIKET_SDK_TELEMETRY_URL` – Telemetry reporting endpoint (optional)
 - `KIKET_SDK_TELEMETRY_OPTOUT` – Set to `1` to disable telemetry

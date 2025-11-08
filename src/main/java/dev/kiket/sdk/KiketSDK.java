@@ -138,6 +138,9 @@ public class KiketSDK {
         String telemetryUrl = builder.telemetryUrl != null ? builder.telemetryUrl
             : System.getenv("KIKET_SDK_TELEMETRY_URL");
 
+        String extensionApiKey = builder.extensionApiKey != null ? builder.extensionApiKey
+            : System.getenv("KIKET_EXTENSION_API_KEY");
+
         return SDKConfig.builder()
             .webhookSecret(webhookSecret)
             .workspaceToken(workspaceToken)
@@ -148,6 +151,7 @@ public class KiketSDK {
             .telemetryEnabled(builder.telemetryEnabled)
             .feedbackHook(builder.feedbackHook)
             .telemetryUrl(telemetryUrl)
+            .extensionApiKey(extensionApiKey)
             .build();
     }
 
@@ -173,6 +177,7 @@ public class KiketSDK {
         private boolean telemetryEnabled = true;
         private TelemetryReporter.FeedbackHook feedbackHook;
         private String telemetryUrl;
+        private String extensionApiKey;
 
         public Builder webhookSecret(String webhookSecret) {
             this.webhookSecret = webhookSecret;
@@ -226,6 +231,11 @@ public class KiketSDK {
 
         public Builder telemetryUrl(String telemetryUrl) {
             this.telemetryUrl = telemetryUrl;
+            return this;
+        }
+
+        public Builder extensionApiKey(String extensionApiKey) {
+            this.extensionApiKey = extensionApiKey;
             return this;
         }
 

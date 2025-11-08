@@ -41,4 +41,11 @@ public class ExtensionEndpoints {
         return client.get("/extensions/" + extensionId, Map.class)
             .block();
     }
+
+    public CustomDataClient customData(Object projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("projectId is required");
+        }
+        return new CustomDataClient(client, projectId.toString());
+    }
 }

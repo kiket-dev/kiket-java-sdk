@@ -14,6 +14,7 @@ import java.util.Map;
 public class SDKConfig {
     private String webhookSecret;
     private String workspaceToken;
+    private String extensionApiKey;
     private String baseUrl;
     private Map<String, Object> settings;
     private String extensionId;
