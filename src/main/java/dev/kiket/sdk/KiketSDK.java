@@ -43,7 +43,8 @@ public class KiketSDK {
             config.getTelemetryUrl(),
             config.getFeedbackHook(),
             config.getExtensionId(),
-            config.getExtensionVersion()
+            config.getExtensionVersion(),
+            config.getExtensionApiKey()
         );
     }
 
@@ -136,7 +137,8 @@ public class KiketSDK {
             : manifest != null ? manifest.getVersion() : null;
 
         String telemetryUrl = builder.telemetryUrl != null ? builder.telemetryUrl
-            : System.getenv("KIKET_SDK_TELEMETRY_URL");
+            : System.getenv("KIKET_SDK_TELEMETRY_URL") != null ? System.getenv("KIKET_SDK_TELEMETRY_URL")
+            : baseUrl.replaceAll("/+$", "") + "/api/v1/ext";
 
         String extensionApiKey = builder.extensionApiKey != null ? builder.extensionApiKey
             : System.getenv("KIKET_EXTENSION_API_KEY");
