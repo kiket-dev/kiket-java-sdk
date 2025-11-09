@@ -12,7 +12,7 @@
 
     <name>Kiket Java SDK</name>
     <description>Official Java SDK for building Kiket extensions</description>
-    <url>https://github.com/kiket/kiket</url>
+    <url>https://github.com/kiket-dev/kiket-java-sdk</url>
 
     <licenses>
         <license>
@@ -31,9 +31,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/kiket/kiket.git</connection>
-        <developerConnection>scm:git:ssh://github.com:kiket/kiket.git</developerConnection>
-        <url>https://github.com/kiket/kiket/tree/main/sdk/java</url>
+        <connection>scm:git:git://github.com/kiket-dev/kiket-java-sdk.git</connection>
+        <developerConnection>scm:git:ssh://github.com:kiket-dev/kiket-java-sdk.git</developerConnection>
+        <url>https://github.com/kiket-dev/kiket-java-sdk</url>
     </scm>
 
     <properties>
@@ -192,7 +192,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/kiket/kiket-sdk-java</url>
+            <url>https://maven.pkg.github.com/kiket-dev/kiket-java-sdk</url>
         </repository>
     </distributionManagement>
 </project>
