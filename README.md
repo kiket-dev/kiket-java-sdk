@@ -92,6 +92,34 @@ sdk.register("issue.created", "v1", (payload, context) -> {
 });
 ```
 
+### SLA Alert Stream
+
+SLA monitors raise `workflow.sla_status` events. Use the helper to inspect current alerts:
+
+```java
+sdk.register("workflow.sla_status", "v1", (payload, context) -> {
+    String projectId = String.valueOf(((Map<?, ?>) payload.get("issue")).get("project_id"));
+    var slaClient = context.getEndpoints().slaEvents(projectId);
+
+    var options = new SlaEventsClient.SlaEventsListOptions();
+    options.setState("imminent");
+    options.setLimit(5);
+
+    var events = slaClient.list(options);
+    if (events.getData().isEmpty()) {
+        return Map.of("ok", true);
+    }
+
+    var first = events.getData().get(0);
+    context.getEndpoints().logEvent("sla.warning", Map.of(
+        "issue_id", first.get("issue_id"),
+        "state", first.get("state")
+    ));
+
+    return Map.of("acknowledged", true);
+});
+```
+
 ## Configuration
 
 ### Environment Variables

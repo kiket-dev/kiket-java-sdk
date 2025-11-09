@@ -48,4 +48,11 @@ public class ExtensionEndpoints {
         }
         return new CustomDataClient(client, projectId.toString());
     }
+
+    public SlaEventsClient slaEvents(Object projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("projectId is required");
+        }
+        return new SlaEventsClient(client, projectId.toString());
+    }
 }
