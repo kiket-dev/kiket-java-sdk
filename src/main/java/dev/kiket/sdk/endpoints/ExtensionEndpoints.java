@@ -55,4 +55,13 @@ public class ExtensionEndpoints {
         }
         return new SlaEventsClient(client, projectId.toString());
     }
+
+    public RateLimitInfo rateLimit() {
+        RateLimitResponse response = client.get("/api/v1/ext/rate_limit", RateLimitResponse.class)
+            .block();
+        if (response == null) {
+            return null;
+        }
+        return response.getRateLimit();
+    }
 }

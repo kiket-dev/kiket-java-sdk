@@ -13,6 +13,7 @@
 - 🧱 **Typed & documented** – designed for Java 17+ with full type safety and rich Javadoc comments.
 - 📊 **Telemetry & feedback hooks** – capture handler duration/success metrics automatically.
 - 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.getEndpoints().customData(projectId)` using the configured extension API key.
+- 📉 **Rate-limit helper** – inspect `/api/v1/ext/rate_limit` via `context.getEndpoints().rateLimit()` before fanning out jobs.
 
 ## Quickstart
 
@@ -218,3 +219,22 @@ When you are ready to cut a release:
 ## License
 
 MIT
+### Rate-Limit Helper
+
+Throttle expensive webhooks by checking the remaining window:
+
+```java
+sdk.register("automation.dispatch", "v1", (payload, context) -> {
+    RateLimitInfo limits = context.getEndpoints().rateLimit();
+    if (limits != null && limits.getRemaining() < 5) {
+        context.getEndpoints().logEvent("rate_limited", Map.of(
+            "remaining", limits.getRemaining(),
+            "reset_in", limits.getResetIn()
+        ));
+        return Map.of("deferred", true);
+    }
+
+    // Continue with heavy work
+    return Map.of("ok", true);
+});
+```
