@@ -56,6 +56,13 @@ public class ExtensionEndpoints {
         return new SlaEventsClient(client, projectId.toString());
     }
 
+    public IntakeFormsClient intakeForms(Object projectId) {
+        if (projectId == null) {
+            throw new IllegalArgumentException("projectId is required");
+        }
+        return new IntakeFormsClient(client, projectId.toString());
+    }
+
     public RateLimitInfo rateLimit() {
         RateLimitResponse response = client.get("/api/v1/ext/rate_limit", RateLimitResponse.class)
             .block();
