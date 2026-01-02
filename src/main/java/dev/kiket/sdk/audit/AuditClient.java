@@ -64,7 +64,21 @@ public class AuditClient {
      * Get the blockchain proof for a specific audit record.
      */
     public BlockchainProof getProof(long recordId) throws Exception {
-        String response = httpClient.get("/api/v1/audit/records/" + recordId + "/proof", null);
+        return getProof(recordId, "AuditLog");
+    }
+
+    /**
+     * Get the blockchain proof for a specific audit record.
+     * @param recordId The ID of the audit record
+     * @param recordType Type of record ("AuditLog" or "AIAuditLog")
+     */
+    public BlockchainProof getProof(long recordId, String recordType) throws Exception {
+        Map<String, String> params = null;
+        if (!"AuditLog".equals(recordType)) {
+            params = new HashMap<>();
+            params.put("record_type", recordType);
+        }
+        String response = httpClient.get("/api/v1/audit/records/" + recordId + "/proof", params);
         return gson.fromJson(response, BlockchainProof.class);
     }
 
