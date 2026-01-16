@@ -1,0 +1,64 @@
+# syntax=docker/dockerfile:1
+# Kiket Extension Dockerfile Template - Java SDK
+# This template is used by Cloud Build to generate Dockerfiles for extensions
+# that declare `sdk: java` in their manifest.
+
+# Build stage
+FROM eclipse-temurin:21-jdk-jammy AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends git curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy dependency files first for better caching
+COPY pom.xml ./
+
+# Download dependencies (uses Maven wrapper if present, otherwise install maven)
+RUN if [ -f mvnw ]; then chmod +x mvnw; fi
+COPY . .
+RUN if [ -f mvnw ]; then \
+      ./mvnw dependency:go-offline -B; \
+    else \
+      apt-get update -qq && apt-get install -y --no-install-recommends maven && \
+      mvn dependency:go-offline -B; \
+    fi
+
+# Build the application
+RUN if [ -f mvnw ]; then \
+      ./mvnw package -DskipTests -B; \
+    else \
+      mvn package -DskipTests -B; \
+    fi
+
+# Runtime stage
+FROM eclipse-temurin:21-jre-jammy
+
+WORKDIR /app
+
+# Install curl for health checks
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy built JAR from builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
+# Create non-root user for security
+RUN useradd -m -s /bin/bash kiket && \
+    chown -R kiket:kiket /app
+
+USER kiket
+
+# Port configured via deployments.yml, default 9292
+ENV PORT=${PORT}
+EXPOSE ${PORT}
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:${PORT}/health || exit 1
+
+# SDK handles server via run()
+CMD ["java", "-jar", "app.jar"]
