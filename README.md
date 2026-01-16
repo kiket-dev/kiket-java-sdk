@@ -194,8 +194,34 @@ public interface HandlerContext {
     String getExtensionId();
     String getExtensionVersion();
     ExtensionSecretManager getSecrets();
+    String secret(String key);  // Secret helper with payload-first fallback
 }
 ```
+
+### Secret Helper
+
+The `secret()` method provides a simple way to retrieve secrets with automatic fallback:
+
+```java
+// Checks payload secrets first (per-org config), falls back to ENV
+String slackToken = context.secret("SLACK_BOT_TOKEN");
+
+// Example usage
+sdk.register("issue.created", "v1", (payload, context) -> {
+    String apiKey = context.secret("API_KEY");
+    if (apiKey == null) {
+        throw new IllegalStateException("API_KEY not configured");
+    }
+    // Use apiKey...
+    return Map.of("ok", true);
+});
+```
+
+The lookup order is:
+1. **Payload secrets** (per-org configuration from `payload["secrets"]`)
+2. **Environment variables** (extension defaults via `System.getenv()`)
+
+This allows organizations to override extension defaults with their own credentials.
 
 ## Publishing to GitHub Packages
 
