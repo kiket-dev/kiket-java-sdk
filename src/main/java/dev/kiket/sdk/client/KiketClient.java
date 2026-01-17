@@ -14,16 +14,16 @@ public class KiketClient {
     private final WebClient webClient;
     private final String workspaceToken;
     private final String eventVersion;
-    private final String extensionApiKey;
+    private final String runtimeToken;
 
     public KiketClient(String baseUrl, String workspaceToken, String eventVersion) {
         this(baseUrl, workspaceToken, eventVersion, null);
     }
 
-    public KiketClient(String baseUrl, String workspaceToken, String eventVersion, String extensionApiKey) {
+    public KiketClient(String baseUrl, String workspaceToken, String eventVersion, String runtimeToken) {
         this.workspaceToken = workspaceToken;
         this.eventVersion = eventVersion;
-        this.extensionApiKey = extensionApiKey;
+        this.runtimeToken = runtimeToken;
 
         this.webClient = WebClient.builder()
             .baseUrl(baseUrl)
@@ -82,8 +82,8 @@ public class KiketClient {
         if (eventVersion != null) {
             headers.set("X-Kiket-Event-Version", eventVersion);
         }
-        if (extensionApiKey != null) {
-            headers.set("X-Kiket-API-Key", extensionApiKey);
+        if (runtimeToken != null) {
+            headers.set("X-Kiket-Runtime-Token", runtimeToken);
         }
     }
 }

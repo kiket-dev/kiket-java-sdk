@@ -14,7 +14,6 @@ public class TelemetryReporter {
     private final boolean enabled;
     private final WebClient webClient;
     private final String endpoint;
-    private final String extensionApiKey;
     private final FeedbackHook feedbackHook;
     private final String extensionId;
     private final String extensionVersion;
@@ -24,15 +23,13 @@ public class TelemetryReporter {
         String telemetryUrl,
         FeedbackHook feedbackHook,
         String extensionId,
-        String extensionVersion,
-        String extensionApiKey
+        String extensionVersion
     ) {
         String optOut = System.getenv("KIKET_SDK_TELEMETRY_OPTOUT");
         this.enabled = enabled && !"1".equals(optOut);
         this.feedbackHook = feedbackHook;
         this.extensionId = extensionId;
         this.extensionVersion = extensionVersion;
-        this.extensionApiKey = extensionApiKey;
 
         if (telemetryUrl != null && !telemetryUrl.isBlank()) {
             this.endpoint = normalizeEndpoint(telemetryUrl);
@@ -78,11 +75,6 @@ public class TelemetryReporter {
         if (webClient != null && endpoint != null) {
             webClient.post()
                 .uri(endpoint)
-                .headers(headers -> {
-                    if (extensionApiKey != null) {
-                        headers.add("X-Kiket-API-Key", extensionApiKey);
-                    }
-                })
                 .bodyValue(buildPayload(record))
                 .retrieve()
                 .bodyToMono(Void.class)

@@ -12,7 +12,7 @@
 - 📦 **Manifest-aware defaults** – automatically loads `extension.yaml`/`manifest.yaml`, applies configuration defaults, and hydrates secrets from `KIKET_SECRET_*` environment variables.
 - 🧱 **Typed & documented** – designed for Java 17+ with full type safety and rich Javadoc comments.
 - 📊 **Telemetry & feedback hooks** – capture handler duration/success metrics automatically.
-- 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.getEndpoints().customData(projectId)` using the configured extension API key.
+- 📇 **Custom data client** – call `/api/v1/ext/custom_data/...` with `context.getEndpoints().customData(projectId)` using the runtime token.
 - 📉 **Rate-limit helper** – inspect `/api/v1/ext/rate_limit` via `context.getEndpoints().rateLimit()` before fanning out jobs.
 
 ## Quickstart
@@ -72,7 +72,7 @@ public class Main {
 
 ### Custom Data Client
 
-When your manifest defines `custom_data.permissions`, configure `extensionApiKey(...)` (or set `KIKET_EXTENSION_API_KEY`) so outbound calls include `X-Kiket-API-Key`:
+When your manifest defines `custom_data.permissions`, the SDK automatically uses the runtime token provided in the webhook payload for API calls via `context.getClient()`:
 
 ```java
 sdk.register("issue.created", "v1", (payload, context) -> {
@@ -127,7 +127,6 @@ sdk.register("workflow.sla_status", "v1", (payload, context) -> {
 
 - `KIKET_WEBHOOK_SECRET` – Webhook HMAC secret for signature verification
 - `KIKET_WORKSPACE_TOKEN` – Workspace token for API authentication
-- `KIKET_EXTENSION_API_KEY` – Extension API key for `/api/v1/ext/**` endpoints (custom data client)
 - `KIKET_BASE_URL` – Kiket API base URL (defaults to `https://kiket.dev`)
 - `KIKET_SDK_TELEMETRY_URL` – Telemetry reporting endpoint (optional)
 - `KIKET_SDK_TELEMETRY_OPTOUT` – Set to `1` to disable telemetry
