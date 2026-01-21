@@ -1,48 +1,48 @@
 package dev.kiket.sdk.audit;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
  * Represents a Merkle proof for an audit record.
  */
 public class BlockchainProof {
-    @SerializedName("record_id")
+    @JsonProperty("record_id")
     private long recordId;
 
-    @SerializedName("record_type")
+    @JsonProperty("record_type")
     private String recordType;
 
-    @SerializedName("content_hash")
+    @JsonProperty("content_hash")
     private String contentHash;
 
-    @SerializedName("anchor_id")
+    @JsonProperty("anchor_id")
     private long anchorId;
 
-    @SerializedName("merkle_root")
+    @JsonProperty("merkle_root")
     private String merkleRoot;
 
-    @SerializedName("leaf_index")
+    @JsonProperty("leaf_index")
     private int leafIndex;
 
-    @SerializedName("leaf_count")
+    @JsonProperty("leaf_count")
     private int leafCount;
 
     private List<String> proof;
     private String network;
 
-    @SerializedName("tx_hash")
+    @JsonProperty("tx_hash")
     private String txHash;
 
-    @SerializedName("block_number")
+    @JsonProperty("block_number")
     private Long blockNumber;
 
-    @SerializedName("block_timestamp")
+    @JsonProperty("block_timestamp")
     private String blockTimestamp;
 
     private boolean verified;
 
-    @SerializedName("verification_url")
+    @JsonProperty("verification_url")
     private String verificationUrl;
 
     // Getters
@@ -60,4 +60,20 @@ public class BlockchainProof {
     public String getBlockTimestamp() { return blockTimestamp; }
     public boolean isVerified() { return verified; }
     public String getVerificationUrl() { return verificationUrl; }
+
+    // Setters
+    public void setRecordId(long recordId) { this.recordId = recordId; }
+    public void setRecordType(String recordType) { this.recordType = recordType; }
+    public void setContentHash(String contentHash) { this.contentHash = contentHash; }
+    public void setAnchorId(long anchorId) { this.anchorId = anchorId; }
+    public void setMerkleRoot(String merkleRoot) { this.merkleRoot = merkleRoot; }
+    public void setLeafIndex(int leafIndex) { this.leafIndex = leafIndex; }
+    public void setLeafCount(int leafCount) { this.leafCount = leafCount; }
+    public void setProof(List<String> proof) { this.proof = proof; }
+    public void setNetwork(String network) { this.network = network; }
+    public void setTxHash(String txHash) { this.txHash = txHash; }
+    public void setBlockNumber(Long blockNumber) { this.blockNumber = blockNumber; }
+    public void setBlockTimestamp(String blockTimestamp) { this.blockTimestamp = blockTimestamp; }
+    public void setVerified(boolean verified) { this.verified = verified; }
+    public void setVerificationUrl(String verificationUrl) { this.verificationUrl = verificationUrl; }
 }

@@ -1,69 +1,53 @@
 package dev.kiket.sdk.audit;
 
-import dev.kiket.sdk.client.HttpClient;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.kiket.sdk.client.KiketClient;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
 import java.util.*;
 
 /**
  * Client for blockchain audit verification operations.
  */
 public class AuditClient {
-    private final HttpClient httpClient;
-    private final Gson gson;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public AuditClient(HttpClient httpClient) {
-        this.httpClient = httpClient;
-        this.gson = new Gson();
+    private final KiketClient client;
+
+    public AuditClient(KiketClient client) {
+        this.client = client;
     }
 
     /**
      * List blockchain anchors for the organization.
      */
-    public ListAnchorsResult listAnchors(ListAnchorsOptions options) throws Exception {
-        Map<String, String> params = new HashMap<>();
-        params.put("page", String.valueOf(options.getPage()));
-        params.put("per_page", String.valueOf(options.getPerPage()));
-
-        if (options.getStatus() != null) {
-            params.put("status", options.getStatus());
-        }
-        if (options.getNetwork() != null) {
-            params.put("network", options.getNetwork());
-        }
-        if (options.getFrom() != null) {
-            params.put("from", options.getFrom().toString());
-        }
-        if (options.getTo() != null) {
-            params.put("to", options.getTo().toString());
-        }
-
-        String response = httpClient.get("/api/v1/audit/anchors", params);
-        return gson.fromJson(response, ListAnchorsResult.class);
+    public ListAnchorsResult listAnchors(ListAnchorsOptions options) {
+        String url = buildListAnchorsUrl(options);
+        return client.get(url, ListAnchorsResult.class).block();
     }
 
     /**
      * Get details of a specific anchor by merkle root.
      */
-    public BlockchainAnchor getAnchor(String merkleRoot, boolean includeRecords) throws Exception {
-        Map<String, String> params = new HashMap<>();
+    public BlockchainAnchor getAnchor(String merkleRoot, boolean includeRecords) {
+        StringBuilder url = new StringBuilder("/api/v1/audit/anchors/")
+            .append(encode(merkleRoot));
+
         if (includeRecords) {
-            params.put("include_records", "true");
+            url.append("?include_records=true");
         }
 
-        String response = httpClient.get("/api/v1/audit/anchors/" + merkleRoot, params);
-        return gson.fromJson(response, BlockchainAnchor.class);
+        return client.get(url.toString(), BlockchainAnchor.class).block();
     }
 
     /**
      * Get the blockchain proof for a specific audit record.
      */
-    public BlockchainProof getProof(long recordId) throws Exception {
+    public BlockchainProof getProof(long recordId) {
         return getProof(recordId, "AuditLog");
     }
 
@@ -72,20 +56,22 @@ public class AuditClient {
      * @param recordId The ID of the audit record
      * @param recordType Type of record ("AuditLog" or "AIAuditLog")
      */
-    public BlockchainProof getProof(long recordId, String recordType) throws Exception {
-        Map<String, String> params = null;
+    public BlockchainProof getProof(long recordId, String recordType) {
+        StringBuilder url = new StringBuilder("/api/v1/audit/records/")
+            .append(recordId)
+            .append("/proof");
+
         if (!"AuditLog".equals(recordType)) {
-            params = new HashMap<>();
-            params.put("record_type", recordType);
+            url.append("?record_type=").append(encode(recordType));
         }
-        String response = httpClient.get("/api/v1/audit/records/" + recordId + "/proof", params);
-        return gson.fromJson(response, BlockchainProof.class);
+
+        return client.get(url.toString(), BlockchainProof.class).block();
     }
 
     /**
      * Verify a blockchain proof via the API.
      */
-    public VerificationResult verify(BlockchainProof proof) throws Exception {
+    public VerificationResult verify(BlockchainProof proof) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("content_hash", proof.getContentHash());
         payload.put("merkle_root", proof.getMerkleRoot());
@@ -93,17 +79,15 @@ public class AuditClient {
         payload.put("leaf_index", proof.getLeafIndex());
         payload.put("tx_hash", proof.getTxHash());
 
-        String response = httpClient.post("/api/v1/audit/verify", gson.toJson(payload));
-        return gson.fromJson(response, VerificationResult.class);
+        return client.post("/api/v1/audit/verify", payload, VerificationResult.class).block();
     }
 
     /**
      * Compute the content hash for a record (for local verification).
      */
-    public static String computeContentHash(Map<String, Object> data) throws NoSuchAlgorithmException {
+    public static String computeContentHash(Map<String, Object> data) throws NoSuchAlgorithmException, JsonProcessingException {
         TreeMap<String, Object> sorted = new TreeMap<>(data);
-        Gson gson = new Gson();
-        String canonical = gson.toJson(sorted);
+        String canonical = MAPPER.writeValueAsString(sorted);
 
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(canonical.getBytes(StandardCharsets.UTF_8));
@@ -141,6 +125,31 @@ public class AuditClient {
 
         byte[] expected = normalizeHash(merkleRoot);
         return Arrays.equals(current, expected);
+    }
+
+    private String buildListAnchorsUrl(ListAnchorsOptions options) {
+        List<String> query = new ArrayList<>();
+        query.add("page=" + options.getPage());
+        query.add("per_page=" + options.getPerPage());
+
+        if (options.getStatus() != null) {
+            query.add("status=" + encode(options.getStatus()));
+        }
+        if (options.getNetwork() != null) {
+            query.add("network=" + encode(options.getNetwork()));
+        }
+        if (options.getFrom() != null) {
+            query.add("from=" + encode(options.getFrom().toString()));
+        }
+        if (options.getTo() != null) {
+            query.add("to=" + encode(options.getTo().toString()));
+        }
+
+        return "/api/v1/audit/anchors?" + String.join("&", query);
+    }
+
+    private static String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     private static byte[] normalizeHash(String h) {

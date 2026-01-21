@@ -3,7 +3,6 @@ package dev.kiket.sdk.endpoints;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.kiket.sdk.client.KiketClient;
-import lombok.Data;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -88,19 +87,28 @@ public class CustomDataClient {
         return path.append("?").append(String.join("&", query)).toString();
     }
 
-    @Data
     public static class CustomDataListOptions {
         private Integer limit;
         private Map<String, Object> filters;
+
+        public Integer getLimit() { return limit; }
+        public void setLimit(Integer limit) { this.limit = limit; }
+
+        public Map<String, Object> getFilters() { return filters; }
+        public void setFilters(Map<String, Object> filters) { this.filters = filters; }
     }
 
-    @Data
     public static class CustomDataListResponse {
         private List<Map<String, Object>> data;
+
+        public List<Map<String, Object>> getData() { return data; }
+        public void setData(List<Map<String, Object>> data) { this.data = data; }
     }
 
-    @Data
     public static class CustomDataRecordResponse {
         private Map<String, Object> data;
+
+        public Map<String, Object> getData() { return data; }
+        public void setData(Map<String, Object> data) { this.data = data; }
     }
 }

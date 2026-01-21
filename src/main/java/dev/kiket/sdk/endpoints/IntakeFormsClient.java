@@ -2,11 +2,9 @@ package dev.kiket.sdk.endpoints;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.kiket.sdk.client.KiketClient;
-import lombok.Data;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +24,6 @@ public class IntakeFormsClient {
         this.projectId = projectId;
     }
 
-    /**
-     * List all intake forms for the project.
-     */
     public IntakeFormListResponse list(IntakeFormListOptions options) {
         String url = buildUrl(null, null,
             options != null ? options.getActive() : null,
@@ -38,9 +33,6 @@ public class IntakeFormsClient {
         return client.get(url, IntakeFormListResponse.class).block();
     }
 
-    /**
-     * Get a specific intake form by key or ID.
-     */
     public IntakeForm get(String formKey) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -49,9 +41,6 @@ public class IntakeFormsClient {
         return client.get(url, IntakeForm.class).block();
     }
 
-    /**
-     * Get the public URL for a form if it's public.
-     */
     public String publicUrl(IntakeForm form) {
         if (form != null && form.isPublic()) {
             return form.getFormUrl();
@@ -59,9 +48,6 @@ public class IntakeFormsClient {
         return null;
     }
 
-    /**
-     * List submissions for an intake form.
-     */
     public IntakeSubmissionListResponse listSubmissions(String formKey, IntakeSubmissionListOptions options) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -73,9 +59,6 @@ public class IntakeFormsClient {
         return client.get(url, IntakeSubmissionListResponse.class).block();
     }
 
-    /**
-     * Get a specific submission by ID.
-     */
     public IntakeSubmission getSubmission(String formKey, Object submissionId) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -87,9 +70,6 @@ public class IntakeFormsClient {
         return client.get(url, IntakeSubmission.class).block();
     }
 
-    /**
-     * Create a new submission for an intake form.
-     */
     public IntakeSubmission createSubmission(String formKey, Map<String, Object> data, Map<String, Object> metadata) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -109,9 +89,6 @@ public class IntakeFormsClient {
         return client.post(url, payload, IntakeSubmission.class).block();
     }
 
-    /**
-     * Approve a pending submission.
-     */
     public IntakeSubmission approveSubmission(String formKey, Object submissionId, String notes) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -130,9 +107,6 @@ public class IntakeFormsClient {
         return client.post(url, payload, IntakeSubmission.class).block();
     }
 
-    /**
-     * Reject a pending submission.
-     */
     public IntakeSubmission rejectSubmission(String formKey, Object submissionId, String notes) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -151,9 +125,6 @@ public class IntakeFormsClient {
         return client.post(url, payload, IntakeSubmission.class).block();
     }
 
-    /**
-     * Get submission statistics for an intake form.
-     */
     public IntakeFormStats stats(String formKey, String period) {
         if (formKey == null || formKey.isBlank()) {
             throw new IllegalArgumentException("formKey is required");
@@ -247,31 +218,46 @@ public class IntakeFormsClient {
 
     // Data classes
 
-    @Data
     public static class IntakeFormListOptions {
         private Boolean active;
         private Boolean publicOnly;
         private Integer limit;
+
+        public Boolean getActive() { return active; }
+        public void setActive(Boolean active) { this.active = active; }
+        public Boolean getPublicOnly() { return publicOnly; }
+        public void setPublicOnly(Boolean publicOnly) { this.publicOnly = publicOnly; }
+        public Integer getLimit() { return limit; }
+        public void setLimit(Integer limit) { this.limit = limit; }
     }
 
-    @Data
     public static class IntakeSubmissionListOptions {
         private String status;
         private Integer limit;
         private String since;
+
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+        public Integer getLimit() { return limit; }
+        public void setLimit(Integer limit) { this.limit = limit; }
+        public String getSince() { return since; }
+        public void setSince(String since) { this.since = since; }
     }
 
-    @Data
     public static class IntakeFormListResponse {
         private List<IntakeForm> data;
+
+        public List<IntakeForm> getData() { return data; }
+        public void setData(List<IntakeForm> data) { this.data = data; }
     }
 
-    @Data
     public static class IntakeSubmissionListResponse {
         private List<IntakeSubmission> data;
+
+        public List<IntakeSubmission> getData() { return data; }
+        public void setData(List<IntakeSubmission> data) { this.data = data; }
     }
 
-    @Data
     public static class IntakeForm {
         private Long id;
         private String key;
@@ -291,9 +277,33 @@ public class IntakeFormsClient {
         private String createdAt;
         @JsonProperty("updated_at")
         private String updatedAt;
+
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        public String getKey() { return key; }
+        public void setKey(String key) { this.key = key; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+        public boolean isActive() { return active; }
+        public void setActive(boolean active) { this.active = active; }
+        public boolean isPublic() { return isPublic; }
+        public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
+        public List<IntakeFormField> getFields() { return fields; }
+        public void setFields(List<IntakeFormField> fields) { this.fields = fields; }
+        public String getFormUrl() { return formUrl; }
+        public void setFormUrl(String formUrl) { this.formUrl = formUrl; }
+        public boolean isEmbedAllowed() { return embedAllowed; }
+        public void setEmbedAllowed(boolean embedAllowed) { this.embedAllowed = embedAllowed; }
+        public int getSubmissionsCount() { return submissionsCount; }
+        public void setSubmissionsCount(int submissionsCount) { this.submissionsCount = submissionsCount; }
+        public String getCreatedAt() { return createdAt; }
+        public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+        public String getUpdatedAt() { return updatedAt; }
+        public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
 
-    @Data
     public static class IntakeFormField {
         private String key;
         private String label;
@@ -304,9 +314,23 @@ public class IntakeFormsClient {
         private String placeholder;
         @JsonProperty("help_text")
         private String helpText;
+
+        public String getKey() { return key; }
+        public void setKey(String key) { this.key = key; }
+        public String getLabel() { return label; }
+        public void setLabel(String label) { this.label = label; }
+        public String getFieldType() { return fieldType; }
+        public void setFieldType(String fieldType) { this.fieldType = fieldType; }
+        public boolean isRequired() { return required; }
+        public void setRequired(boolean required) { this.required = required; }
+        public List<String> getOptions() { return options; }
+        public void setOptions(List<String> options) { this.options = options; }
+        public String getPlaceholder() { return placeholder; }
+        public void setPlaceholder(String placeholder) { this.placeholder = placeholder; }
+        public String getHelpText() { return helpText; }
+        public void setHelpText(String helpText) { this.helpText = helpText; }
     }
 
-    @Data
     public static class IntakeSubmission {
         private Long id;
         @JsonProperty("intake_form_id")
@@ -325,9 +349,31 @@ public class IntakeFormsClient {
         private String createdAt;
         @JsonProperty("updated_at")
         private String updatedAt;
+
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        public Long getIntakeFormId() { return intakeFormId; }
+        public void setIntakeFormId(Long intakeFormId) { this.intakeFormId = intakeFormId; }
+        public String getStatus() { return status; }
+        public void setStatus(String status) { this.status = status; }
+        public Map<String, Object> getData() { return data; }
+        public void setData(Map<String, Object> data) { this.data = data; }
+        public Map<String, Object> getMetadata() { return metadata; }
+        public void setMetadata(Map<String, Object> metadata) { this.metadata = metadata; }
+        public String getSubmittedByEmail() { return submittedByEmail; }
+        public void setSubmittedByEmail(String submittedByEmail) { this.submittedByEmail = submittedByEmail; }
+        public String getReviewedBy() { return reviewedBy; }
+        public void setReviewedBy(String reviewedBy) { this.reviewedBy = reviewedBy; }
+        public String getReviewedAt() { return reviewedAt; }
+        public void setReviewedAt(String reviewedAt) { this.reviewedAt = reviewedAt; }
+        public String getNotes() { return notes; }
+        public void setNotes(String notes) { this.notes = notes; }
+        public String getCreatedAt() { return createdAt; }
+        public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+        public String getUpdatedAt() { return updatedAt; }
+        public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
     }
 
-    @Data
     public static class IntakeFormStats {
         @JsonProperty("total_submissions")
         private int totalSubmissions;
@@ -336,5 +382,18 @@ public class IntakeFormsClient {
         private int rejected;
         private int converted;
         private String period;
+
+        public int getTotalSubmissions() { return totalSubmissions; }
+        public void setTotalSubmissions(int totalSubmissions) { this.totalSubmissions = totalSubmissions; }
+        public int getPending() { return pending; }
+        public void setPending(int pending) { this.pending = pending; }
+        public int getApproved() { return approved; }
+        public void setApproved(int approved) { this.approved = approved; }
+        public int getRejected() { return rejected; }
+        public void setRejected(int rejected) { this.rejected = rejected; }
+        public int getConverted() { return converted; }
+        public void setConverted(int converted) { this.converted = converted; }
+        public String getPeriod() { return period; }
+        public void setPeriod(String period) { this.period = period; }
     }
 }

@@ -1,7 +1,6 @@
 package dev.kiket.sdk.endpoints;
 
 import dev.kiket.sdk.client.KiketClient;
-import lombok.Data;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -50,15 +49,25 @@ public class SlaEventsClient {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    @Data
     public static class SlaEventsListOptions {
         private String issueId;
         private String state;
         private Integer limit;
+
+        public String getIssueId() { return issueId; }
+        public void setIssueId(String issueId) { this.issueId = issueId; }
+
+        public String getState() { return state; }
+        public void setState(String state) { this.state = state; }
+
+        public Integer getLimit() { return limit; }
+        public void setLimit(Integer limit) { this.limit = limit; }
     }
 
-    @Data
     public static class SlaEventsResponse {
         private List<Map<String, Object>> data;
+
+        public List<Map<String, Object>> getData() { return data; }
+        public void setData(List<Map<String, Object>> data) { this.data = data; }
     }
 }

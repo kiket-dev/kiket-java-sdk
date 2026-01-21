@@ -1,6 +1,6 @@
 package dev.kiket.sdk.audit;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 /**
@@ -9,37 +9,37 @@ import java.util.List;
 public class BlockchainAnchor {
     private long id;
 
-    @SerializedName("merkle_root")
+    @JsonProperty("merkle_root")
     private String merkleRoot;
 
-    @SerializedName("leaf_count")
+    @JsonProperty("leaf_count")
     private int leafCount;
 
-    @SerializedName("first_record_at")
+    @JsonProperty("first_record_at")
     private String firstRecordAt;
 
-    @SerializedName("last_record_at")
+    @JsonProperty("last_record_at")
     private String lastRecordAt;
 
     private String network;
     private String status;
 
-    @SerializedName("tx_hash")
+    @JsonProperty("tx_hash")
     private String txHash;
 
-    @SerializedName("block_number")
+    @JsonProperty("block_number")
     private Long blockNumber;
 
-    @SerializedName("block_timestamp")
+    @JsonProperty("block_timestamp")
     private String blockTimestamp;
 
-    @SerializedName("confirmed_at")
+    @JsonProperty("confirmed_at")
     private String confirmedAt;
 
-    @SerializedName("explorer_url")
+    @JsonProperty("explorer_url")
     private String explorerUrl;
 
-    @SerializedName("created_at")
+    @JsonProperty("created_at")
     private String createdAt;
 
     private List<AnchorRecord> records;
@@ -60,6 +60,22 @@ public class BlockchainAnchor {
     public String getCreatedAt() { return createdAt; }
     public List<AnchorRecord> getRecords() { return records; }
 
+    // Setters
+    public void setId(long id) { this.id = id; }
+    public void setMerkleRoot(String merkleRoot) { this.merkleRoot = merkleRoot; }
+    public void setLeafCount(int leafCount) { this.leafCount = leafCount; }
+    public void setFirstRecordAt(String firstRecordAt) { this.firstRecordAt = firstRecordAt; }
+    public void setLastRecordAt(String lastRecordAt) { this.lastRecordAt = lastRecordAt; }
+    public void setNetwork(String network) { this.network = network; }
+    public void setStatus(String status) { this.status = status; }
+    public void setTxHash(String txHash) { this.txHash = txHash; }
+    public void setBlockNumber(Long blockNumber) { this.blockNumber = blockNumber; }
+    public void setBlockTimestamp(String blockTimestamp) { this.blockTimestamp = blockTimestamp; }
+    public void setConfirmedAt(String confirmedAt) { this.confirmedAt = confirmedAt; }
+    public void setExplorerUrl(String explorerUrl) { this.explorerUrl = explorerUrl; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public void setRecords(List<AnchorRecord> records) { this.records = records; }
+
     /**
      * Represents a record within an anchor.
      */
@@ -67,15 +83,20 @@ public class BlockchainAnchor {
         private long id;
         private String type;
 
-        @SerializedName("leaf_index")
+        @JsonProperty("leaf_index")
         private int leafIndex;
 
-        @SerializedName("content_hash")
+        @JsonProperty("content_hash")
         private String contentHash;
 
         public long getId() { return id; }
         public String getType() { return type; }
         public int getLeafIndex() { return leafIndex; }
         public String getContentHash() { return contentHash; }
+
+        public void setId(long id) { this.id = id; }
+        public void setType(String type) { this.type = type; }
+        public void setLeafIndex(int leafIndex) { this.leafIndex = leafIndex; }
+        public void setContentHash(String contentHash) { this.contentHash = contentHash; }
     }
 }

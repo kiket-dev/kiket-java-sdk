@@ -1,6 +1,6 @@
 package dev.kiket.sdk.audit;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Result of a blockchain verification.
@@ -8,30 +8,30 @@ import com.google.gson.annotations.SerializedName;
 public class VerificationResult {
     private boolean verified;
 
-    @SerializedName("proof_valid")
+    @JsonProperty("proof_valid")
     private boolean proofValid;
 
-    @SerializedName("blockchain_verified")
+    @JsonProperty("blockchain_verified")
     private boolean blockchainVerified;
 
-    @SerializedName("content_hash")
+    @JsonProperty("content_hash")
     private String contentHash;
 
-    @SerializedName("merkle_root")
+    @JsonProperty("merkle_root")
     private String merkleRoot;
 
-    @SerializedName("leaf_index")
+    @JsonProperty("leaf_index")
     private int leafIndex;
 
-    @SerializedName("block_number")
+    @JsonProperty("block_number")
     private Long blockNumber;
 
-    @SerializedName("block_timestamp")
+    @JsonProperty("block_timestamp")
     private String blockTimestamp;
 
     private String network;
 
-    @SerializedName("explorer_url")
+    @JsonProperty("explorer_url")
     private String explorerUrl;
 
     private String error;
@@ -48,4 +48,17 @@ public class VerificationResult {
     public String getNetwork() { return network; }
     public String getExplorerUrl() { return explorerUrl; }
     public String getError() { return error; }
+
+    // Setters
+    public void setVerified(boolean verified) { this.verified = verified; }
+    public void setProofValid(boolean proofValid) { this.proofValid = proofValid; }
+    public void setBlockchainVerified(boolean blockchainVerified) { this.blockchainVerified = blockchainVerified; }
+    public void setContentHash(String contentHash) { this.contentHash = contentHash; }
+    public void setMerkleRoot(String merkleRoot) { this.merkleRoot = merkleRoot; }
+    public void setLeafIndex(int leafIndex) { this.leafIndex = leafIndex; }
+    public void setBlockNumber(Long blockNumber) { this.blockNumber = blockNumber; }
+    public void setBlockTimestamp(String blockTimestamp) { this.blockTimestamp = blockTimestamp; }
+    public void setNetwork(String network) { this.network = network; }
+    public void setExplorerUrl(String explorerUrl) { this.explorerUrl = explorerUrl; }
+    public void setError(String error) { this.error = error; }
 }

@@ -1,7 +1,5 @@
 package dev.kiket.sdk.handler;
 
-import lombok.Data;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,10 +47,19 @@ public class HandlerRegistry {
         return event + ":" + version;
     }
 
-    @Data
     public static class HandlerMetadata {
         private final String event;
         private final String version;
         private final WebhookHandler handler;
+
+        public HandlerMetadata(String event, String version, WebhookHandler handler) {
+            this.event = event;
+            this.version = version;
+            this.handler = handler;
+        }
+
+        public String getEvent() { return event; }
+        public String getVersion() { return version; }
+        public WebhookHandler getHandler() { return handler; }
     }
 }
