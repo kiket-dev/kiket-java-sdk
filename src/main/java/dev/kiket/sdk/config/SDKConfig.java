@@ -8,7 +8,6 @@ import java.util.Map;
  * SDK configuration.
  */
 public class SDKConfig {
-    private String webhookSecret;
     private String workspaceToken;
     private String baseUrl;
     private Map<String, Object> settings;
@@ -19,7 +18,6 @@ public class SDKConfig {
     private String telemetryUrl;
 
     private SDKConfig(Builder builder) {
-        this.webhookSecret = builder.webhookSecret;
         this.workspaceToken = builder.workspaceToken;
         this.baseUrl = builder.baseUrl;
         this.settings = builder.settings;
@@ -33,9 +31,6 @@ public class SDKConfig {
     public static Builder builder() {
         return new Builder();
     }
-
-    public String getWebhookSecret() { return webhookSecret; }
-    public void setWebhookSecret(String webhookSecret) { this.webhookSecret = webhookSecret; }
 
     public String getWorkspaceToken() { return workspaceToken; }
     public void setWorkspaceToken(String workspaceToken) { this.workspaceToken = workspaceToken; }
@@ -62,7 +57,6 @@ public class SDKConfig {
     public void setTelemetryUrl(String telemetryUrl) { this.telemetryUrl = telemetryUrl; }
 
     public static class Builder {
-        private String webhookSecret;
         private String workspaceToken;
         private String baseUrl;
         private Map<String, Object> settings;
@@ -71,11 +65,6 @@ public class SDKConfig {
         private boolean telemetryEnabled;
         private TelemetryReporter.FeedbackHook feedbackHook;
         private String telemetryUrl;
-
-        public Builder webhookSecret(String webhookSecret) {
-            this.webhookSecret = webhookSecret;
-            return this;
-        }
 
         public Builder workspaceToken(String workspaceToken) {
             this.workspaceToken = workspaceToken;

@@ -1,6 +1,5 @@
 package dev.kiket.sdk;
 
-import dev.kiket.sdk.auth.WebhookAuthFilter;
 import dev.kiket.sdk.config.SDKConfig;
 import dev.kiket.sdk.config.ExtensionManifest;
 import dev.kiket.sdk.config.ManifestLoader;
@@ -101,11 +100,6 @@ public class KiketSDK {
         return telemetry;
     }
 
-    @Bean
-    public WebhookAuthFilter webhookAuthFilter() {
-        return new WebhookAuthFilter(config.getWebhookSecret());
-    }
-
     private SDKConfig resolveConfig(Builder builder, ExtensionManifest manifest) {
         String baseUrl = builder.baseUrl != null ? builder.baseUrl
             : System.getenv("KIKET_BASE_URL") != null ? System.getenv("KIKET_BASE_URL")
@@ -113,10 +107,6 @@ public class KiketSDK {
 
         String workspaceToken = builder.workspaceToken != null ? builder.workspaceToken
             : System.getenv("KIKET_WORKSPACE_TOKEN");
-
-        String webhookSecret = builder.webhookSecret != null ? builder.webhookSecret
-            : manifest != null && manifest.getDeliverySecret() != null ? manifest.getDeliverySecret()
-            : System.getenv("KIKET_WEBHOOK_SECRET");
 
         Map<String, Object> settings = new HashMap<>();
         if (manifest != null) {
@@ -140,7 +130,6 @@ public class KiketSDK {
             : baseUrl.replaceAll("/+$", "") + "/api/v1/ext";
 
         return SDKConfig.builder()
-            .webhookSecret(webhookSecret)
             .workspaceToken(workspaceToken)
             .baseUrl(baseUrl)
             .settings(settings)
@@ -163,7 +152,6 @@ public class KiketSDK {
      * Builder for KiketSDK configuration.
      */
     public static class Builder {
-        private String webhookSecret;
         private String workspaceToken;
         private String baseUrl;
         private Map<String, Object> settings;
@@ -174,11 +162,6 @@ public class KiketSDK {
         private boolean telemetryEnabled = true;
         private TelemetryReporter.FeedbackHook feedbackHook;
         private String telemetryUrl;
-
-        public Builder webhookSecret(String webhookSecret) {
-            this.webhookSecret = webhookSecret;
-            return this;
-        }
 
         public Builder workspaceToken(String workspaceToken) {
             this.workspaceToken = workspaceToken;
