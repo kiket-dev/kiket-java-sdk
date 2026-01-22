@@ -197,6 +197,42 @@ public interface HandlerContext {
 }
 ```
 
+### Response Helpers
+
+Use the `ExtensionResponse` class to build properly formatted responses:
+
+```java
+import dev.kiket.sdk.responses.ExtensionResponse;
+
+// Simple allow
+return ExtensionResponse.allow().build();
+
+// Allow with message and data
+return ExtensionResponse.allow()
+    .message("Successfully configured")
+    .data("routeId", 123)
+    .build();
+
+// Allow with output fields (displayed in configuration UI)
+return ExtensionResponse.allow()
+    .message("Mailjet configured successfully")
+    .data("routeId", route.getId())
+    .outputField("inbound_email", route.getEmail())
+    .build();
+
+// Deny with error details
+return ExtensionResponse.deny("Invalid credentials")
+    .data("errorCode", "AUTH_FAILED")
+    .build();
+
+// Pending for async operations
+return ExtensionResponse.pending("Awaiting approval")
+    .data("jobId", "abc123")
+    .build();
+```
+
+Output fields are displayed in the extension configuration UI after setup, allowing extensions to expose generated data like email addresses, webhook URLs, or status information.
+
 ### Secret Helper
 
 The `secret()` method provides a simple way to retrieve secrets with automatic fallback:
